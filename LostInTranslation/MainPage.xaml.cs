@@ -25,6 +25,9 @@ namespace LostInTranslation
         public MainPage()
         {
             this.InitializeComponent();
+
+
+
         }
     }
 }
