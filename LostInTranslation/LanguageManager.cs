@@ -1,40 +1,41 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace LostInTranslation {
 
-	internal struct ISO639 {
-		internal ISO639(string value,Language language) {
+	public struct ISO639 {
+		public ISO639(string value,Language language) {
 			Value = value;
 			Language = language;
 		}
-		internal string Value {
+		public string Value {
 			get;
 		}
-		internal Language Language {
+		public Language Language {
 			get;
 		}
 	}
 
-	internal struct Translation {
-		internal Translation(string text,ISO639 iso639) {
+	public struct Translation {
+		public Translation(string text,ISO639 iso639) {
 			Text = text;
 			ISO639 = iso639;
 		}
-		internal string Text {
+		public string Text {
 			get;
 		}
-		internal ISO639 ISO639 {
+		public ISO639 ISO639 {
 			get;
 		}
 	}
 
-	internal enum Language {
+	public enum Language {
 		English, Spanish, German, Swedish, Italian, French
 	}
 
-	internal static class LanguageManager {
+	public static class LanguageManager {
 
-		internal static ISO639 GetLanguageCode(Language language) {
+		public static ISO639 GetLanguageCode(Language language) {
 			switch(language) {
 				default:
 				case Language.English:
@@ -52,15 +53,39 @@ namespace LostInTranslation {
 			}
 		}
 
-		internal static string GetLanguageName(Language language) {
+		public static string GetLanguageName(Language language) {
 			return language.ToString("g");
 		}
 
-		internal static Language GetRandomLanguage(Random random) {
-			var languages = Enum.GetValues(typeof(Language));
-			return (Language)languages.GetValue(
-				random.Next(0,languages.GetUpperBound(0))
-			);
+		public static Language[] GetAllLanguages() {
+			return Enum.GetValues(typeof(Language)) as Language[];
+		}
+
+		public static ISO639[] GetRandomTargets(Random random,Language[] languages,int layers) {
+			
+			var targets = new ISO639[layers];
+
+			var runningLanguageList = new List<Language>(languages);
+
+			var lastLanguage = runningLanguageList[
+				random.Next(0,runningLanguageList.Count-1)
+			];
+
+			runningLanguageList.Remove(lastLanguage);
+
+			for(int i = 1;i<layers;i++) {
+
+				var language = runningLanguageList[
+					random.Next(0,runningLanguageList.Count-1)
+				];
+				runningLanguageList.Remove(language);
+				runningLanguageList.Add(lastLanguage);
+				lastLanguage = language;
+
+				targets[i] = GetLanguageCode(language);
+
+			}
+			return targets;
 		}
 
 	}

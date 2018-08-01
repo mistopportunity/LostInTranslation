@@ -6,16 +6,41 @@ using System.Threading.Tasks;
 
 namespace LostInTranslation.TranslationServices {
 	internal sealed class DummyTranslator:ITranslationService {
+
+		private readonly Random random = new Random(123456789);
+
 		public IEnumerable<Translation[]> GetSuperTranslation(string text,ISO639 source,int threads,int layers) {
-			throw new NotImplementedException();
+
+			var languages = LanguageManager.GetAllLanguages();
+
+			for(int i = 0;i<threads;i++) {
+
+				var targets = LanguageManager.GetRandomTargets(random,languages,layers);
+
+				var translations = new Translation[layers];
+
+				for(int i2 = 0;i2<layers;i2++) {
+
+					translations[i2] = new Translation(
+						text,targets[i2]
+					);
+
+				}
+
+				yield return translations;
+
+
+			}
+
+
 		}
 
 		public Translation GetTranslation(string text,ISO639 source,ISO639 target) {
-			throw new NotImplementedException();
+			return new Translation(text,target);
 		}
 
 		public Translation GetTranslation(string text,ISO639 source,ISO639[] targets) {
-			throw new NotImplementedException();
+			return new Translation(text,targets[targets.Length-1]);
 		}
 	}
 }
