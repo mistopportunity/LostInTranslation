@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Popups;
@@ -29,26 +30,26 @@ namespace LostInTranslation {
 			var text = TranslationInputBlock.Text;
 			text = text.Trim();
 			if(string.IsNullOrEmpty(text)) {
-				if(TranslationResults.Children.Count > 0) {
-					TranslationResults.Children.Clear();
-				}
 				return;
 			}
-			var validated = translationService.GetTextValidation(text);
 
-			if(validated.Item1 != null) {
+			var validated = translationService.GetTextValidation(text);
+			if(validated.IsValid) {
 
 				var inputLanguage = LostInTranslation.Language.English;
 
-				var translations = translationService.GetSuperTranslation(
-					validated.Item1,
+				BigFriendlyButton.Content = "processing..";
+				BigFriendlyButton.IsEnabled = false;
+				TranslationInputBlock.IsEnabled = false;
+
+				IEnumerable<Translation[]> translations = await translationService.GetSuperTranslation(
+					validated.Value,
 					LanguageManager.GetLanguageCode(inputLanguage),
 					8,
 					8
 				);
 
 				TranslationResults.Children.Clear();
-
 				foreach(var translation in translations) {
 
 					var translationResult = new TranslatorResult() {
@@ -59,8 +60,13 @@ namespace LostInTranslation {
 
 				}
 
-			} else if(validated.Item2 != null) {
-				MessageDialog dialog = new MessageDialog(validated.Item2,"Lost in translation") {
+				BigFriendlyButton.Content = "translate this";
+				BigFriendlyButton.IsEnabled = true;
+				TranslationInputBlock.IsEnabled = true;
+
+
+			} else if(validated.Value != null) {
+				MessageDialog dialog = new MessageDialog(validated.Value,"Lost in translation") {
 					DefaultCommandIndex = 0,
 					CancelCommandIndex = 0,
 				};

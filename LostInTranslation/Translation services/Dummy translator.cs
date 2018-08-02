@@ -5,11 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace LostInTranslation.TranslationServices {
+
+	//Don't use in production!
 	internal sealed class DummyTranslator:ITranslationService {
+
 
 		private readonly Random random = new Random(123456789);
 
-		IEnumerable<Translation[]> ITranslationService.GetSuperTranslation(string text,ISO639 source,int threads,int layers) {
+		async Task<IEnumerable<Translation[]>> ITranslationService.GetSuperTranslation(string text,ISO639 source,int threads,int layers) {
+
+			var translationThreads = new List<Translation[]>();
+
+			await Task.Delay(TimeSpan.FromSeconds(0.5)); //for testing "pauses"
 
 			var languages = LanguageManager.GetAllLanguages();
 
@@ -32,25 +39,27 @@ namespace LostInTranslation.TranslationServices {
 
 				}
 
-				yield return translations;
+				translationThreads.Add(translations);
 
 			}
 
+			return translationThreads;
+
 		}
 
-		Translation ITranslationService.GetTranslation(string text,ISO639 source,ISO639 target) {
+		async Task<Translation> ITranslationService.GetTranslation(string text,ISO639 source,ISO639 target) {
 			return new Translation(text,target);
 		}
 
-		Translation ITranslationService.GetTranslation(string text,ISO639 source,ISO639[] targets) {
+		async Task<Translation> ITranslationService.GetTranslation(string text,ISO639 source,ISO639[] targets) {
 			return new Translation(text,targets[targets.Length-1]);
 		}
 
-		Tuple<string,string> ITranslationService.GetTextValidation(string text) {
+		ValidationResult ITranslationService.GetTextValidation(string text) {
 			if(text.Length > 512) {
-				return new Tuple<string,string>(null,"The text is too long and there's nothing I want to do about it. Text length must not be greater than 512 characters.");
+				return new ValidationResult(false,"The text is too long and there's nothing I want to do about it. Text length must not be greater than 512 characters.");
 			} else {
-				return new Tuple<string,string>(text,null);
+				return new ValidationResult(true,text);
 			}
 		}
 	}
