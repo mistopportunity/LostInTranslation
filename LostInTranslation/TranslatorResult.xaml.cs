@@ -38,5 +38,9 @@ namespace LostInTranslation {
 				translation = value;
 			}
 		}
+		public void UseAsErrorProxy(string message,string title) {
+			TranslationOrderBlock.Text = title;
+			TranslationOutputBlock.Text = message;
+		}
 	}
 }

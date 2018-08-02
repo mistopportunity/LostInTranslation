@@ -18,6 +18,8 @@ namespace LostInTranslation.TranslationServices {
 
 			await Task.Delay(TimeSpan.FromSeconds(0.5)); //for testing "pauses"
 
+			throw new Exception("The developer wanted to throw an exception to test exception handling! What a bastard!");
+
 			var languages = LanguageManager.GetAllLanguages();
 
 			for(int i = 0;i<threads;i++) {

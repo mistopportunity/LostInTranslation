@@ -23,6 +23,60 @@ namespace LostInTranslation {
 		public MainPage() {
 			this.InitializeComponent();
 			translationService = new TranslationServices.DummyTranslator();
+			StatusUpdate("Have fun in this.. nice.. place. Yep.","Welcome!");
+		}
+
+		private void HangUserInterface() {
+			BigFriendlyButton.Content = "processing..";
+			BigFriendlyButton.IsEnabled = false;
+			TranslationInputBlock.IsEnabled = false;
+		}
+
+		private void ResumeUserInterface() {
+			BigFriendlyButton.Content = "translate this";
+			BigFriendlyButton.IsEnabled = true;
+			TranslationInputBlock.IsEnabled = true;
+		}
+
+		private bool hasTranslations = false;
+
+		private string lastMessage = string.Empty;
+		private int repeats = 0;
+
+		private void StatusUpdate(string message,string title) {
+
+			if(hasTranslations) {
+				TranslationResults.Children.Clear();
+				hasTranslations = false;
+			}
+
+			var translationResult = new TranslatorResult();
+			translationResult.UseAsErrorProxy(message,title);
+
+			TranslationResults.Children.Add(translationResult);
+			if(TranslationResults.Children.Count > 5) {
+
+				if(lastMessage == message) {
+
+					TranslationResults.Children.RemoveAt(4);
+					TranslationResults.Children.RemoveAt(4);
+
+					var repeatBlock = new TranslatorResult();
+					repeatBlock.UseAsErrorProxy(message,
+						$"{title} - {++repeats} repeat{(repeats != 1 ? "s" : "")}"
+					);
+
+					TranslationResults.Children.Add(repeatBlock);
+
+				} else {
+					TranslationResults.Children.RemoveAt(0);
+					repeats = 0;
+				}
+
+
+			}
+
+			lastMessage = message;
 		}
 
 		private async void BigFriendlyButton_Click(object sender,RoutedEventArgs e) {
@@ -30,25 +84,33 @@ namespace LostInTranslation {
 			var text = TranslationInputBlock.Text;
 			text = text.Trim();
 			if(string.IsNullOrEmpty(text)) {
+				StatusUpdate("This text is empty! I'm not a miracle worker!","User error");
 				return;
 			}
 
 			var validated = translationService.GetTextValidation(text);
 			if(validated.IsValid) {
-
+				HangUserInterface();
 				var inputLanguage = LostInTranslation.Language.English;
+				IEnumerable<Translation[]> translations = null;
+				try {
+					translations = await translationService.GetSuperTranslation(
+						validated.Value,
+						LanguageManager.GetLanguageCode(inputLanguage),
+						8,
+						8
+					);
+				} catch (Exception exception) {
+					StatusUpdate(exception.Message,"Whoops! Internal service error");
+					ResumeUserInterface();
+					return;
+				}
 
-				BigFriendlyButton.Content = "processing..";
-				BigFriendlyButton.IsEnabled = false;
-				TranslationInputBlock.IsEnabled = false;
-
-				IEnumerable<Translation[]> translations = await translationService.GetSuperTranslation(
-					validated.Value,
-					LanguageManager.GetLanguageCode(inputLanguage),
-					8,
-					8
-				);
-
+				if(translations == null) {
+					StatusUpdate("An error with the translation service has occured. Try again later.","Whoops! Internal service error");
+					ResumeUserInterface();
+					return;
+				}
 				TranslationResults.Children.Clear();
 				foreach(var translation in translations) {
 
@@ -59,19 +121,12 @@ namespace LostInTranslation {
 					TranslationResults.Children.Add(translationResult);
 
 				}
-
-				BigFriendlyButton.Content = "translate this";
-				BigFriendlyButton.IsEnabled = true;
-				TranslationInputBlock.IsEnabled = true;
-
-
+				hasTranslations = true;
+				ResumeUserInterface();
 			} else if(validated.Value != null) {
-				MessageDialog dialog = new MessageDialog(validated.Value,"Lost in translation") {
-					DefaultCommandIndex = 0,
-					CancelCommandIndex = 0,
-				};
-				dialog.Commands.Add(new UICommand("Continue"));
-				await dialog.ShowAsync();
+				StatusUpdate(validated.Value,"User error");
+			} else {
+				StatusUpdate("You did something wrong. Sorrrrry :(","User error");
 			}
 		}
 	}
