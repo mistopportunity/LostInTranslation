@@ -27,7 +27,7 @@ namespace LostInTranslation {
 		Translation GetTranslation(string text,ISO639 source,ISO639[] targets);
 
 		/// <summary>
-		/// 
+		/// Get multiple threads of translation paths at once
 		/// </summary>
 		/// <param name="text">The source text to input to the translation service</param>
 		/// <param name="source">An ISO639 object based on the source text</param>
@@ -35,6 +35,13 @@ namespace LostInTranslation {
 		/// <param name="layers">Layers are how deep each thread goes, that is, how many target language each thread goes through</param>
 		/// <returns>An enumerable object of each thread's history</returns>
 		IEnumerable<Translation[]> GetSuperTranslation(string text,ISO639 source,int threads,int layers);
+
+		/// <summary>
+		/// Validate text before entering it into a translation method. These methods expect this processing and should not perform it on their own.
+		/// </summary>
+		/// <param name="text">The text to process. Text input comes trimmed and checked for emptiness.</param>
+		/// <returns>Tuple item1 is null if text is invalid. Item2 is an explanation to push to the UI. If text is valid, item 1 is the processed value and item 2 is null</returns>
+		Tuple<string,string> GetTextValidation(string text);
 
 	}
 }

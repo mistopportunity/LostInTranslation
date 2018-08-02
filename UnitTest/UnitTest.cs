@@ -10,7 +10,7 @@ namespace UnitTest {
 		public void PureRandomTargetGenerationTest() {
 			var random = new Random();
 			var languages = LanguageManager.GetAllLanguages();
-			var targets = LanguageManager.GetRandomTargets(random,languages,8);
+			var targets = LanguageManager.GetRandomTargets(random,languages,Language.English,8);
 			Assert.IsFalse(containsCongruents(targets));
 		}
 
@@ -18,7 +18,7 @@ namespace UnitTest {
 		public void ControlledRandomTargetGenerationTest1() {
 			var random = new Random(123456789);
 			var languages = LanguageManager.GetAllLanguages();
-			var targets = LanguageManager.GetRandomTargets(random,languages,8);
+			var targets = LanguageManager.GetRandomTargets(random,languages,Language.English,8);
 			Assert.IsFalse(containsCongruents(targets));
 		}
 
@@ -26,7 +26,7 @@ namespace UnitTest {
 		public void ControlledRandomTargetGenerationTest2() {
 			var random = new Random(456789213);
 			var languages = LanguageManager.GetAllLanguages();
-			var targets = LanguageManager.GetRandomTargets(random,languages,8);
+			var targets = LanguageManager.GetRandomTargets(random,languages,Language.English,8);
 			Assert.IsFalse(containsCongruents(targets));
 		}
 
@@ -37,7 +37,7 @@ namespace UnitTest {
 			var languages = new Language[] {
 				Language.English, Language.French
 			};
-			var targets = LanguageManager.GetRandomTargets(random,languages,8);
+			var targets = LanguageManager.GetRandomTargets(random,languages,Language.English,8);
 			Assert.IsFalse(containsCongruents(targets));
 		}
 
@@ -47,7 +47,7 @@ namespace UnitTest {
 			var languages = new Language[] {
 				Language.English, Language.French, Language.Italian, Language.Swedish
 			};
-			var targets = LanguageManager.GetRandomTargets(random,languages,8);
+			var targets = LanguageManager.GetRandomTargets(random,languages,Language.English,8);
 			Assert.IsFalse(containsCongruents(targets));
 		}
 

@@ -7,7 +7,27 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+	<Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="7*"/>
+			<RowDefinition Height="25*"/>
+		</Grid.RowDefinitions>
+		<Viewbox>
+			<Grid Height="113" Width="300">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+				<TextBox x:Name="TranslationInputBlock" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Width="280" Height="32" Margin="0,0,0,4" PlaceholderText="translation text" IsSpellCheckEnabled="True"/>
+				<Button x:Name="BigFriendlyButton" HorizontalAlignment="Stretch" Grid.Row="1" VerticalAlignment="Top" Content="translate this" Width="280" Margin="0,4,0,0" Click="BigFriendlyButton_Click" Height="40.2"/>
+			</Grid>
+		</Viewbox>
+		<ScrollViewer Grid.Row="1">
+			<Grid>
+				<StackPanel x:Name="TranslationResults" Grid.Column="1" HorizontalAlignment="Center">
 
-    </Grid>
+				</StackPanel>
+			</Grid>
+		</ScrollViewer>
+	</Grid>
 </Page>

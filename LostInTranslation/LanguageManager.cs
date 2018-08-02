@@ -61,19 +61,25 @@ namespace LostInTranslation {
 			return Enum.GetValues(typeof(Language)) as Language[];
 		}
 
-		public static ISO639[] GetRandomTargets(Random random,Language[] languages,int layers) {
+		public static ISO639[] GetRandomTargets(Random random,Language[] languages,Language startLanguage,int layers) {
 			
-			var targets = new ISO639[layers];
+			var targets = new ISO639[layers+1];
 
 			var runningLanguageList = new List<Language>(languages);
 
-			var lastLanguage = runningLanguageList[
-				random.Next(0,runningLanguageList.Count-1)
-			];
+			Language lastLanguage = startLanguage;
+
+			while(lastLanguage == startLanguage) {
+				lastLanguage = runningLanguageList[
+					random.Next(0,runningLanguageList.Count-1)
+				];
+			}
+
+			targets[0] = GetLanguageCode(lastLanguage);
 
 			runningLanguageList.Remove(lastLanguage);
 
-			for(int i = 1;i<layers;i++) {
+			for(int i = 1;i<layers-1;i++) {
 
 				var language = runningLanguageList[
 					random.Next(0,runningLanguageList.Count-1)
@@ -85,6 +91,18 @@ namespace LostInTranslation {
 				targets[i] = GetLanguageCode(language);
 
 			}
+
+			var finalLanguage = lastLanguage;
+			while(finalLanguage == lastLanguage || finalLanguage == startLanguage) {
+				finalLanguage = runningLanguageList[
+					random.Next(0,runningLanguageList.Count-1)
+				];
+			}
+
+			targets[layers-1] = GetLanguageCode(finalLanguage);
+
+			targets[layers] = GetLanguageCode(startLanguage);
+
 			return targets;
 		}
 
