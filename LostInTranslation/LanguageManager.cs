@@ -30,7 +30,18 @@ namespace LostInTranslation {
 	}
 
 	public enum Language {
-		English, Spanish, German, Swedish, Italian, French
+		English,
+		Spanish,
+		German,
+		Swedish,
+		Italian,
+		French,
+		Afrikaans,
+		Finnish,
+		Japanese,
+		Polish,
+		Russian,
+		Slovak
 	}
 
 	public static class LanguageManager {
@@ -50,6 +61,18 @@ namespace LostInTranslation {
 					return new ISO639("it",language);
 				case Language.French:
 					return new ISO639("fr",language);
+				case Language.Afrikaans:
+					return new ISO639("af",language);
+				case Language.Finnish:
+					return new ISO639("fi",language);
+				case Language.Japanese:
+					return new ISO639("ja",language);
+				case Language.Polish:
+					return new ISO639("pl",language);
+				case Language.Russian:
+					return new ISO639("ru",language);
+				case Language.Slovak:
+					return new ISO639("sk",language);
 			}
 		}
 

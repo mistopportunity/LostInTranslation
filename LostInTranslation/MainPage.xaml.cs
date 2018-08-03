@@ -22,7 +22,7 @@ namespace LostInTranslation {
 
 		public MainPage() {
 			this.InitializeComponent();
-			translationService = new TranslationServices.DummyTranslator();
+			translationService = new TranslationServices.GoogleTranslate();
 			StatusUpdate("Have fun in this.. nice.. place. Yep.","Welcome!");
 		}
 
@@ -45,7 +45,7 @@ namespace LostInTranslation {
 
 		private void StatusUpdate(string message,string title) {
 
-			if(hasTranslations) {
+			if(hasTranslations && TranslationInputBlock.Text.Trim() != lastMessage) {
 				TranslationResults.Children.Clear();
 				hasTranslations = false;
 			}
@@ -79,6 +79,8 @@ namespace LostInTranslation {
 			lastMessage = message;
 		}
 
+		private string lastTranslatedText = null;
+
 		private async void BigFriendlyButton_Click(object sender,RoutedEventArgs e) {
 
 			var text = TranslationInputBlock.Text;
@@ -97,8 +99,8 @@ namespace LostInTranslation {
 					translations = await translationService.GetSuperTranslation(
 						validated.Value,
 						LanguageManager.GetLanguageCode(inputLanguage),
-						8,
-						8
+						1,
+						5
 					);
 				} catch (Exception exception) {
 					StatusUpdate(exception.Message,"Whoops! Internal service error");
@@ -111,7 +113,10 @@ namespace LostInTranslation {
 					ResumeUserInterface();
 					return;
 				}
-				TranslationResults.Children.Clear();
+				if(lastTranslatedText != text) {
+					TranslationResults.Children.Clear();
+				}
+				lastTranslatedText = text;
 				foreach(var translation in translations) {
 
 					var translationResult = new TranslatorResult() {
